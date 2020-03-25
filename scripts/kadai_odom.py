@@ -21,16 +21,9 @@ if __name__ == '__main__':
 
     move.linear.x=0.1
 
-
-    x_start = get_odom()
-
     while not rospy.is_shutdown():
         data = get_odom()
 
         print ("current position: ", data.pose.pose.position.x)
-
-        if (data.pose.pose.position.x - x_start.pose.pose.position.x) > 1.0:
-            move.linear.x = 0.0
-            pub_move.publish(move)
 
         pub_move.publish(move)
