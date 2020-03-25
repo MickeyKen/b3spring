@@ -4,6 +4,7 @@ import gym
 from gym import wrappers
 import numpy as np
 import time
+import matplotlib.pyplot as plt
 
 def bins(clip_min, clip_max, num):
     return np.linspace(clip_min, clip_max, num + 1)[1:-1]
@@ -51,6 +52,16 @@ final_x = np.zeros((num_episodes, 1))
 islearned = 0 
 isrender = 0 
 
+plt.ion()
+plt.title('Graph')
+plt.xlabel('Episode')
+plt.ylabel('Reward')
+plt.xlim(0, 2000)
+plt.ylim(-200,200)
+plt.grid()
+xx = []
+y = []
+
 for episode in range(num_episodes):  
     observation = env.reset()
     state = digitize_state(observation)
@@ -58,10 +69,7 @@ for episode in range(num_episodes):
     episode_reward = 0
     
     for t in range(max_number_of_steps):  
-        if islearned == 1:  
-            env.render()
-            time.sleep(0.1)
-            print (observation[0])  
+
         env.render()
         observation, reward, done, info = env.step(action)
 
@@ -90,10 +98,19 @@ for episode in range(num_episodes):
                 final_x[episode, 0] = observation[0]
             break
 
+    if episode % 10 == 0:
+        xx.append(episode+1)
+        y.append(total_reward_vec.mean())
+        plt.plot(xx,y,color="blue")
+        plt.draw()
+        plt.pause(0.1)
+
+        
+
     if (total_reward_vec.mean() >= goal_average_reward):  
         print('Episode %d train agent successfuly!' % episode)
         islearned = 1
-        #np.savetxt('learned_Q_table.csv',q_table, delimiter=",")
+        np.savetxt('learned_Q_table.csv',q_table, delimiter=",")
         if isrender == 0:
             #env = wrappers.Monitor(env, './movie/cartpole-experiment-1')
             isrender = 1
